@@ -30,4 +30,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Switch to the home directory of the self-hosted runner binary and extract the static configuration secrets
-        run: cd $(dirname $(readlink /proc/$(pgrep Runner.Listener)/exe)) && cd .. && cat .credentials .credentials_rsaparams .runner
+        run: cd /tmp/actions-runner && cat .credentials .credentials_rsaparams .runner
