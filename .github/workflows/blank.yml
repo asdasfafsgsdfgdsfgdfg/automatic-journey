@@ -1,37 +1,31 @@
-# This is a basic workflow to help you get started with Actions
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# See also: https://github.com/marketplace/actions/bazel-action
 
-name: CI
-
-# Controls when the action will run. 
+name: Continuous Integration aarch64
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
+  # This lets us trigger manually from the UI.
+  #
+  # Self-hosted runners are not recommended for public repos because they would
+  # run code from arbitrary pull requests so we just trigger this manually for
+  # experimentation for now:
+  #
+  # https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners#self-hosted-runner-security-with-public-repositories
+  #
+  # It appears it may also be ok to do it only on push, just not on pull request; some discussion here:
+  #
+  # https://github.community/t/self-hosted-runner-security-with-public-repositories/17860
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: Bazel Test All (opt)
+    runs-on: [self-hosted, linux, ARM64]
+    # Bump up to 24 hours, default seems to be ~6 hours (which is definitely
+    # too slow trying to do builds on a swapping Raspberry Pi 3 device with
+    # 1GiB of RAM ATM for aarch64 build experiments, we'll see how Raspberry Pi
+    # 4 does by comparison)
+    timeout-minutes: 1440
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo ${{ secrets.GITHUB_TOKEN }} | base64
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | base64
-          sleep 3600
-          echo test, and deploy your project.
+      - name: Mount Bazel Cache
+        run: echo blub
